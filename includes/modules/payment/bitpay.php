@@ -94,8 +94,8 @@
 
       $lut = array(
         "High-0 Confirmations" => 'high',
-        "Medium-0 Confirmations" => 'medium',
-        "Low-0 Confirmations" => 'low'
+        "Medium-1 Confirmations" => 'medium',
+        "Low-6 Confirmations" => 'low'
       );
 
       // change order status to value selected by merchant
@@ -105,7 +105,7 @@
         'currency' => $order->info['currency'],
         'buyerName' => $order->customer['firstname'].' '.$order->customer['lastname'],
         'fullNotifications' => 'true',
-        'notificationURL' => tep_href_link('bitpay_callback.php', $parameters='', $connection='NONSSL', $add_session_id=true, $search_engine_safe=true, $static=true ),
+        'notificationURL' => tep_href_link('bitpay_callback.php', '', 'SSL', true, true, true ),
         'redirectURL' => tep_href_link('account'),
         'transactionSpeed' => $lut[MODULE_PAYMENT_BITPAY_TRANSACTION_SPEED],
         'apiKey' => MODULE_PAYMENT_BITPAY_APIKEY,
