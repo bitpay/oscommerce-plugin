@@ -106,7 +106,7 @@
         'buyerName' => $order->customer['firstname'].' '.$order->customer['lastname'],
         'fullNotifications' => 'true',
         'notificationURL' => tep_href_link('bitpay_callback.php', '', 'SSL', true, true),
-        'redirectURL' => tep_href_link('account'),
+        'redirectURL' => tep_href_link(FILENAME_ACCOUNT),
         'transactionSpeed' => $lut[MODULE_PAYMENT_BITPAY_TRANSACTION_SPEED],
         'apiKey' => MODULE_PAYMENT_BITPAY_APIKEY,
       );
