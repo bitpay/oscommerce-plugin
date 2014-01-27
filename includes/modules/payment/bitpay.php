@@ -1,5 +1,9 @@
 <?php
 
+  // If you changed the name of your admin directory as recommended during oscommerce install, change
+  // the line below to reflect that.  Otherwise, no edit is required.
+  require ('../../../admin/includes/functions/general.php');
+
   class bitpay {
     var $code, $title, $description, $enabled;
 
