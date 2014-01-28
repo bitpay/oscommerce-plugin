@@ -1,9 +1,27 @@
 <?php
 
+/**
+ * ©2011,2012,2013,2014 BIT-PAY LLC.
+ * 
+ * Permission is hereby granted to any person obtaining a copy of this software
+ * and associated documentation for use and/or modification in association with
+ * the bitpay.com service.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * 
+ * Bitcoin osCommerce payment plugin using the bitpay.com service.
+ * 
+ */
+ 
 require_once 'bp_options.php';
 
-function bpLog($contents)
-{
+function bpLog($contents) {
 	$file = dirname(__FILE__) . '/bplog.txt';
 	file_put_contents($file, date('m-d H:i:s') . ": ", FILE_APPEND);
 	
@@ -20,8 +38,7 @@ function bpCurl($url, $apiKey, $post = false) {
 	
 	$curl = curl_init($url);
 	$length = 0;
-	if ($post)
-	{	
+	if ($post) {
 		curl_setopt($curl, CURLOPT_POST, 1);
 		curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
 		$length = strlen($post);
@@ -139,5 +156,3 @@ function bpGetInvoice($invoiceId, $apiKey=false) {
 
 	return $response;	
 }
-
-
