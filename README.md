@@ -1,7 +1,7 @@
 osCommerce 2.3.3 BitPay Module
 ------------------------------
 
-©2013 BIT-PAY LLC.
+©2013,2014 BIT-PAY LLC.
 Permission is hereby granted to any person obtaining a copy of this software
 and associated documentation for use and/or modification in association with
 the bitpay.com service.
@@ -14,7 +14,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Bitcoin payment module using the bitpay.com service.
+Bitcoin osCommerce payment module using the bitpay.com service.
 
 Installation
 ------------
@@ -43,3 +43,6 @@ When a user chooses the "Bitcoin via BitPay" payment method, they will be presen
 In your Admin control panel, you can see the orders made via Bitcoins just as you could see for any other payment mode.  The status you selected in the configuration steps above will indicate whether the order has been paid for.  
 
 Note: This extension does not provide a means of automatically pulling a current BTC exchange rate for presenting BTC prices to shoppers.
+
+
+Tested and validated against osCommerce 2.3.3.4.
