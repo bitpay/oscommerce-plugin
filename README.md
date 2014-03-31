@@ -1,7 +1,8 @@
 osCommerce 2.3.3 BitPay Module
 ------------------------------
 
-©2013,2014 BITPAY, INC.
+<strong>©2013,2014 BITPAY, INC.</strong>
+
 Permission is hereby granted to any person obtaining a copy of this software
 and associated documentation for use and/or modification in association with
 the bitpay.com service.
@@ -31,7 +32,7 @@ Configuration
 3. Fill out all of the configuration information:
 	- Verify that the module is enabled.
 	- Copy/Paste the API key you created in step 1 into the API Key field
-	- Select a transaction speed.  The high speed will send a confirmation as soon as a transaction is received in the bitcoin network (usually a few seconds).  A medium speed setting will typically take 10 minutes.  The low speed setting usually takes around 1 hour.  See the bitpay.com merchant documentation for a full description of the transaction speed settings.
+	- Select a transaction speed.  The high speed will send a confirmation as soon as a transaction is received in the bitcoin network (usually a few seconds).  A medium speed setting will typically take 10 minutes.  The low speed setting usually takes around 1 hour.  See the bitpay.com merchant documentation for a full description of the transaction speed settings: https://bitpay.com/downloads/bitpayApi.pdf
 	- Choose a status for unpaid and paid orders (or leave the default values as defined).
 	- Verify that the currencies displayed corresponds to what you want and to those accepted by bitpay.com (the defaults are what BitPay accepts as of this writing).
 	- Choose a sort order for displaying this payment option to visitors.  Lowest is displayed first.
@@ -44,5 +45,10 @@ In your Admin control panel, you can see the orders made via Bitcoins just as yo
 
 Note: This extension does not provide a means of automatically pulling a current BTC exchange rate for presenting BTC prices to shoppers.
 
+Version
+-------
+Version 1.1
+- Added new HTTP header for version tracking
 
-Tested and validated against osCommerce 2.3.3.4.
+Version 1.0
+- Tested and validated against osCommerce 2.3.3.4.
