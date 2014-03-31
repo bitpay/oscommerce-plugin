@@ -1,7 +1,7 @@
 <?php
 
 /**
- * ©2011,2012,2013,2014 BIT-PAY LLC.
+ * ©2011,2012,2013,2014 BITPAY, INC.
  * 
  * Permission is hereby granted to any person obtaining a copy of this software
  * and associated documentation for use and/or modification in association with
@@ -49,6 +49,7 @@ function bpCurl($url, $apiKey, $post = false) {
 		'Content-Type: application/json',
 		"Content-Length: $length",
 		"Authorization: Basic $uname",
+		'X-BitPay-Plugin-Info: oscommerce1.1',
 		);
 
 	curl_setopt($curl, CURLOPT_PORT, 443);
@@ -81,7 +82,7 @@ function bpCurl($url, $apiKey, $post = false) {
 // changed in $options.
 //
 // $posData: this field is included in status updates or requests to get an invoice.  It is intended to be used by
-// the merchant to uniquely identify an order associated with an invoice in their system.  Aside from that, Bit-Pay does
+// the merchant to uniquely identify an order associated with an invoice in their system.  Aside from that, BitPay does
 // not use the data in this field.  The data in this field can be anything that is meaningful to the merchant.
 //
 // $options keys can include any of: 
