@@ -25,9 +25,8 @@ require 'includes/application_top.php';
 $response = bpVerifyNotification(MODULE_PAYMENT_BITPAY_APIKEY);
 
 if (is_string($response)) {
-  bpLog('bitpay callback error: $response');
+  bpLog('bitpay callback error: ' . $response);
 } else {
-  bpLog('bitpay callback: $response');
   $order_id = $response['posData'];
   switch($response['status']) {
     case 'paid':
