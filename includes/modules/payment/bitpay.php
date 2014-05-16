@@ -135,9 +135,7 @@
         'apiKey' => MODULE_PAYMENT_BITPAY_APIKEY,
       );
 
-      bpLog($options);
       $invoice = bpCreateInvoice($insert_id, $order->info['total'], $insert_id, $options);
-      bpLog($invoice);
 
       if (!is_array($invoice) or array_key_exists('error', $invoice)) {
         tep_remove_order($insert_id, $restock = true);
