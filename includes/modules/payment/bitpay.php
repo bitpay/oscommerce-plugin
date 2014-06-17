@@ -21,8 +21,26 @@
  
   // If you changed the name of your admin directory as recommended during oscommerce install, change
   // the line below to reflect that.  Otherwise, no edit is required.
-  if(!(function_exists('tep_remove_order')))
-    require ('../../../admin/includes/functions/general.php');
+  if(!(function_exists('tep_remove_order'))) {
+ 
+	function tep_remove_order($order_id, $restock = false) {
+    		if ($restock == 'on') {
+     			$order_query = tep_db_query("select products_id, products_quantity from " . 				TABLE_ORDERS_PRODUCTS . " where orders_id = '" . (int)$order_id . "'");
+     			 while ($order = tep_db_fetch_array($order_query)) {
+        			tep_db_query("update " . TABLE_PRODUCTS . " set products_quantity = 					products_quantity + " . $order['products_quantity'] . ", products_ordered = 					products_ordered - " . $order['products_quantity'] . " where products_id = 					'" . (int)$order['products_id'] . "'");
+      			}
+    		}
+
+    		tep_db_query("delete from " . TABLE_ORDERS . " where orders_id = '" . (int)$order_id . "'");
+    		tep_db_query("delete from " . TABLE_ORDERS_PRODUCTS . " where orders_id = '" . 			(int)$order_id . "'");
+    		tep_db_query("delete from " . TABLE_ORDERS_PRODUCTS_ATTRIBUTES . " where orders_id = '" . 			(int)$order_id . "'");
+    		tep_db_query("delete from " . TABLE_ORDERS_STATUS_HISTORY . " where orders_id = '" . 			(int)$order_id . "'");
+    		tep_db_query("delete from " . TABLE_ORDERS_TOTAL . " where orders_id = '" . (int)$order_id . 			"'");
+		
+  	}
+		
+	
+  }
 
   class bitpay {
     var $code, $title, $description, $enabled;
@@ -137,14 +155,17 @@
 
       $invoice = bpCreateInvoice($insert_id, $order->info['total'], $insert_id, $options);
 
-      if (!is_array($invoice) or array_key_exists('error', $invoice)) {
+      if (!is_array($invoice)) {
+      	tep_remove_order($insert_id, $restock = true);
+        tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . $invoice, 'SSL'));
+      } else if (array_key_exists('error', $invoice)) {
         tep_remove_order($insert_id, $restock = true);
-      }
-      else {
+        tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . implode($invoice['error'], "_"), 'SSL'));
+      } else {
         $_SESSION['cart']->reset(true);
         tep_redirect($invoice['url']);
-
       }
+
       return false;
     }
 
