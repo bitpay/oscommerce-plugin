@@ -1,4 +1,4 @@
-osCommerce 2.3.3 BitPay Module
+osCommerce 2.3.4 BitPay Module
 ------------------------------
 
 <strong>©2013,2014 BITPAY, INC.</strong>
@@ -46,8 +46,11 @@ Note: This extension does not provide a means of automatically pulling a current
 
 Version
 -------
+Version 1.2
+- Tested and validated against osCommerce 2.3.4
+
 Version 1.1
 - Added new HTTP header for version tracking
 
 Version 1.0
-- Tested and validated against osCommerce 2.3.3.4 and 2.3.4
+- Tested and validated against osCommerce 2.3.3.4
