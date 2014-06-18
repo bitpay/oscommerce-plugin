@@ -50,4 +50,4 @@ Version 1.1
 - Added new HTTP header for version tracking
 
 Version 1.0
-- Tested and validated against osCommerce 2.3.3.4.
+- Tested and validated against osCommerce 2.3.3.4 and 2.3.4
