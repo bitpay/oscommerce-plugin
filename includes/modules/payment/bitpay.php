@@ -19,85 +19,81 @@
  * 
  */
  
-  // If you changed the name of your admin directory as recommended during oscommerce install, change
-  // the line below to reflect that.  Otherwise, no edit is required.
-  if(!(function_exists('tep_remove_order'))) {
- 
-	function tep_remove_order($order_id, $restock = false) {
-    		if ($restock == 'on') {
-     			$order_query = tep_db_query("select products_id, products_quantity from " . 				TABLE_ORDERS_PRODUCTS . " where orders_id = '" . (int)$order_id . "'");
-     			 while ($order = tep_db_fetch_array($order_query)) {
-        			tep_db_query("update " . TABLE_PRODUCTS . " set products_quantity = 					products_quantity + " . $order['products_quantity'] . ", products_ordered = 					products_ordered - " . $order['products_quantity'] . " where products_id = 					'" . (int)$order['products_id'] . "'");
-      			}
-    		}
 
-    		tep_db_query("delete from " . TABLE_ORDERS . " where orders_id = '" . (int)$order_id . "'");
-    		tep_db_query("delete from " . TABLE_ORDERS_PRODUCTS . " where orders_id = '" . 			(int)$order_id . "'");
-    		tep_db_query("delete from " . TABLE_ORDERS_PRODUCTS_ATTRIBUTES . " where orders_id = '" . 			(int)$order_id . "'");
-    		tep_db_query("delete from " . TABLE_ORDERS_STATUS_HISTORY . " where orders_id = '" . 			(int)$order_id . "'");
-    		tep_db_query("delete from " . TABLE_ORDERS_TOTAL . " where orders_id = '" . (int)$order_id . 			"'");
-		
-  	}
-		
-	
+  // On some installs, duplicate function definition errors were being thrown.
+  if(!(function_exists('tep_remove_order'))) {
+    function tep_remove_order($order_id, $restock = false) {
+      if ($restock == 'on') {
+        $order_query = tep_db_query("select products_id, products_quantity from " . TABLE_ORDERS_PRODUCTS . " where orders_id = '" . (int)$order_id . "'");
+
+        while ($order = tep_db_fetch_array($order_query))
+          tep_db_query("update " . TABLE_PRODUCTS . " set products_quantity = products_quantity + " . $order['products_quantity'] . ", products_ordered = products_ordered - " . $order['products_quantity'] . " where products_id = '" . (int)$order['products_id'] . "'");
+
+      }
+
+      tep_db_query("delete from " . TABLE_ORDERS . " where orders_id = '" . (int)$order_id . "'");
+      tep_db_query("delete from " . TABLE_ORDERS_PRODUCTS . " where orders_id = '" . (int)$order_id . "'");
+      tep_db_query("delete from " . TABLE_ORDERS_PRODUCTS_ATTRIBUTES . " where orders_id = '" . (int)$order_id . "'");
+      tep_db_query("delete from " . TABLE_ORDERS_STATUS_HISTORY . " where orders_id = '" . (int)$order_id . "'");
+      tep_db_query("delete from " . TABLE_ORDERS_TOTAL . " where orders_id = '" . (int)$order_id . "'");
+    }
   }
 
   class bitpay {
-    var $code, $title, $description, $enabled;
+    public $code;
+    public $title;
+    public $description;
+    public $enabled;
 
-    // Class Constructor
     function bitpay () {
       global $order;
 
-      $this->code = 'bitpay';
-      $this->title = MODULE_PAYMENT_BITPAY_TEXT_TITLE;
+      $this->code        = 'bitpay';
+      $this->title       = MODULE_PAYMENT_BITPAY_TEXT_TITLE;
       $this->description = MODULE_PAYMENT_BITPAY_TEXT_DESCRIPTION;
-      $this->sort_order = MODULE_PAYMENT_BITPAY_SORT_ORDER;
-      $this->enabled = ((MODULE_PAYMENT_BITPAY_STATUS == 'True') ? true : false);
+      $this->sort_order  = MODULE_PAYMENT_BITPAY_SORT_ORDER;
+      $this->enabled     = ((MODULE_PAYMENT_BITPAY_STATUS == 'True') ? true : false);
 
       if ((int)MODULE_PAYMENT_BITPAY_ORDER_STATUS_ID > 0) {
         $this->order_status = MODULE_PAYMENT_BITPAY_ORDER_STATUS_ID;
         $payment='bitpay';
-      }
-      else if ($payment=='bitpay') {
+      } else if ($payment=='bitpay') {
         $payment='';
       }
-      if (is_object($order)) {
+
+      if (is_object($order))
         $this->update_status();
-      }
 
       $this->email_footer = MODULE_PAYMENT_BITPAY_TEXT_EMAIL_FOOTER;
     }
 
-    // Class Methods
     function update_status () {
       global $order;
 
       if ( ($this->enabled == true) && ((int)MODULE_PAYMENT_BITPAY_ZONE > 0) ) {
-        $check_flag = false;
+        $check_flag  = false;
         $check_query = tep_db_query("select zone_id from " . TABLE_ZONES_TO_GEO_ZONES . " where geo_zone_id = '" . intval(MODULE_PAYMENT_BITPAY_ZONE) . "' and zone_country_id = '" . intval($order->billing['country']['id']) . "' order by zone_id");
+
         while ($check = tep_db_fetch_array($check_query)) {
           if ($check['zone_id'] < 1) {
             $check_flag = true;
             break;
-          }
-          elseif ($check['zone_id'] == $order->billing['zone_id']) {
+          } elseif ($check['zone_id'] == $order->billing['zone_id']) {
             $check_flag = true;
             break;
           }
         }
 
-        if ($check_flag == false) {
+        if ($check_flag == false)
           $this->enabled = false;
-        }
+
       }
 
-      // check currency
+      // check supported currency
       $currencies = array_map('trim',explode(",",MODULE_PAYMENT_BITPAY_CURRENCIES));
 
-      if (array_search($order->info['currency'], $currencies) === false) {
+      if (array_search($order->info['currency'], $currencies) === false)
         $this->enabled = false;
-      }
 
       // check that api key is not blank
       if (!MODULE_PAYMENT_BITPAY_APIKEY OR !strlen(MODULE_PAYMENT_BITPAY_APIKEY)) {
@@ -135,35 +131,46 @@
       require_once 'bitpay/bp_lib.php';
 
       $lut = array(
-        "High-0 Confirmations" => 'high',
+        "High-0 Confirmations"   => 'high',
         "Medium-1 Confirmations" => 'medium',
-        "Low-6 Confirmations" => 'low'
+        "Low-6 Confirmations"    => 'low'
       );
 
       // change order status to value selected by merchant
       tep_db_query("update ". TABLE_ORDERS. " set orders_status = " . intval(MODULE_PAYMENT_BITPAY_UNPAID_STATUS_ID) . " where orders_id = ". intval($insert_id));
+
       $options = array(
-        'physical' => $order->content_type == 'physical' ? 'true' : 'false',
-        'currency' => $order->info['currency'],
-        'buyerName' => $order->customer['firstname'].' '.$order->customer['lastname'],
+        'physical'          => $order->content_type == 'physical' ? 'true' : 'false',
+        'currency'          => $order->info['currency'],
+        'buyerName'         => $order->customer['firstname'] . ' ' . $order->customer['lastname'],
         'fullNotifications' => 'true',
-        'notificationURL' => tep_href_link('bitpay_callback.php', '', 'SSL', true, true),
-        'redirectURL' => tep_href_link(FILENAME_ACCOUNT),
-        'transactionSpeed' => $lut[MODULE_PAYMENT_BITPAY_TRANSACTION_SPEED],
-        'apiKey' => MODULE_PAYMENT_BITPAY_APIKEY,
+        'notificationURL'   => tep_href_link('bitpay_callback.php', '', 'SSL', true, true),
+        'redirectURL'       => tep_href_link(FILENAME_ACCOUNT),
+        'transactionSpeed'  => $lut[MODULE_PAYMENT_BITPAY_TRANSACTION_SPEED],
+        'apiKey'            => MODULE_PAYMENT_BITPAY_APIKEY,
       );
 
       $invoice = bpCreateInvoice($insert_id, $order->info['total'], $insert_id, $options);
 
-      if (!is_array($invoice)) {
-      	tep_remove_order($insert_id, $restock = true);
-        tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . $invoice, 'SSL'));
-      } else if (array_key_exists('error', $invoice)) {
+      if (is_array($invoice) && array_key_exists('error', $invoice)) {
+      	// error
+      	bpLog('Error creating invoice: ' . var_export($invoice, true));
         tep_remove_order($insert_id, $restock = true);
-        tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . implode($invoice['error'], "_"), 'SSL'));
-      } else {
-        $_SESSION['cart']->reset(true);
+        tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . urlencode($invoice['error']['message']), "_"), 'SSL');
+      } else if(!is_array($invoice)) {
+      	// error
+      	bpLog('Error creating invoice: ' . var_export($invoice, true));
+      	tep_remove_order($insert_id, $restock = true);
+        tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . urlencode('There was a problem processing your payment: invalid response returned from gateway.'), "_"), 'SSL');
+      } else if (is_array($invoice) && array_key_exists('url', $invoice)) {
+      	// success
+      	$_SESSION['cart']->reset(true);
         tep_redirect($invoice['url']);
+      } else {
+      	// unknown problem
+      	bpLog('Error creating invoice: ' . var_export($invoice, true));
+        tep_remove_order($insert_id, $restock = true);
+        tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . urlencode('There was a problem processing your payment: unknown error or response.'), "_"), 'SSL');
       }
 
       return false;
@@ -175,9 +182,10 @@
 
     function check () {
       if (!isset($this->_check)) {
-        $check_query = tep_db_query("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'MODULE_PAYMENT_BITPAY_STATUS'");
+        $check_query  = tep_db_query("select configuration_value from " . TABLE_CONFIGURATION . " where configuration_key = 'MODULE_PAYMENT_BITPAY_STATUS'");
         $this->_check = tep_db_num_rows($check_query);
       }
+
       return $this->_check;
     }
 
