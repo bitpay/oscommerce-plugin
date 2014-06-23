@@ -1,4 +1,4 @@
-osCommerce 2.3.3 BitPay Module
+osCommerce 2.3.4 BitPay Module
 ------------------------------
 
 <strong>©2013,2014 BITPAY, INC.</strong>
@@ -23,7 +23,6 @@ Installation
 2. Copy the bitpay directory into your osCommerce catalog directory
 3. Copy includes/modules/payment/bitpay.php into catalog/includes/modules/payment/
 4. Copy includes/languages/english/modules/payment/bitpay.php into catalog/includes/languages/english/modules/payment/
-5. If you changed the name of the 'admin' folder during install, edit the require() line in includes/modules/payment/bitpay.php to reflect that change.
 
 Configuration
 -------------
@@ -47,8 +46,11 @@ Note: This extension does not provide a means of automatically pulling a current
 
 Version
 -------
+Version 1.2
+- Tested and validated against osCommerce 2.3.4
+
 Version 1.1
 - Added new HTTP header for version tracking
 
 Version 1.0
-- Tested and validated against osCommerce 2.3.3.4.
+- Tested and validated against osCommerce 2.3.3.4
