@@ -156,12 +156,12 @@
       	// error
       	bpLog('Error creating invoice: ' . var_export($invoice, true));
         tep_remove_order($insert_id, $restock = true);
-        tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . urlencode($invoice['error']['message']), "_"), 'SSL');
+        tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . urlencode($invoice['error']['message']), 'SSL'));
       } else if(!is_array($invoice)) {
       	// error
       	bpLog('Error creating invoice: ' . var_export($invoice, true));
       	tep_remove_order($insert_id, $restock = true);
-        tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . urlencode('There was a problem processing your payment: invalid response returned from gateway.'), "_"), 'SSL');
+        tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . urlencode('There was a problem processing your payment: invalid response returned from gateway.'), 'SSL'));
       } else if (is_array($invoice) && array_key_exists('url', $invoice)) {
       	// success
       	$_SESSION['cart']->reset(true);
@@ -170,7 +170,7 @@
       	// unknown problem
       	bpLog('Error creating invoice: ' . var_export($invoice, true));
         tep_remove_order($insert_id, $restock = true);
-        tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . urlencode('There was a problem processing your payment: unknown error or response.'), "_"), 'SSL');
+        tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . urlencode('There was a problem processing your payment: unknown error or response.'), 'SSL'));
       }
 
       return false;
