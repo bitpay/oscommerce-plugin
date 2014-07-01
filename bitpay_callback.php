@@ -20,7 +20,6 @@
  */
 
 require 'bitpay/bp_lib.php';
-require 'includes/application_top.php';
 
 $response = bpVerifyNotification(MODULE_PAYMENT_BITPAY_APIKEY);
 
@@ -32,20 +31,30 @@ if (is_string($response)) {
     case 'paid':
     case 'confirmed':
     case 'complete':
-    	if(function_exists('tep_db_query'))
+      //require needed for tep_db_query
+      require 'includes/application_top.php';
+
+      if(function_exists('tep_db_query'))
           tep_db_query("update " . TABLE_ORDERS . " set orders_status = " . MODULE_PAYMENT_BITPAY_PAID_STATUS_ID . " where orders_id = " . intval($order_id));
       else
           bpLog('FATAL: tep_db_query function is missing. Cannot update order_id = ' . $order_id . ' as ' . $response['status']);
-    	break;
+      break;
     case 'invalid':
     case 'expired':
-    	if(function_exists('tep_remove_order'))
+      //requires needed for tep_remove_order
+      require 'admin/includes/configure.php';
+      require 'admin/includes/database_tables.php';
+      require 'admin/includes/functions/database.php';
+      tep_db_connect() or die('Unable to connect to database server!');
+      require 'admin/includes/functions/general.php';
+
+      if(function_exists('tep_remove_order'))
           tep_remove_order($order_id, $restock = true);
       else
           bpLog('FATAL: tep_remove_order function is missing. Cannot update order_id = ' . $order_id . ' as ' . $response['status']);
-    	break;
+      break;
     case 'new':
-    	break;
+      break;
     default:
       bpLog('INFO: Receieved unknown IPN status of ' . $response['status'] . ' for order_id = ' . $order_id);
       break;
