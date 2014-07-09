@@ -22,21 +22,7 @@
 
   // On some installs, duplicate function definition errors were being thrown.
   if(!(function_exists('tep_remove_order'))) {
-    function tep_remove_order($order_id, $restock = false) {
-      if ($restock == 'on') {
-        $order_query = tep_db_query("select products_id, products_quantity from " . TABLE_ORDERS_PRODUCTS . " where orders_id = '" . (int)$order_id . "'");
-
-        while ($order = tep_db_fetch_array($order_query))
-          tep_db_query("update " . TABLE_PRODUCTS . " set products_quantity = products_quantity + " . $order['products_quantity'] . ", products_ordered = products_ordered - " . $order['products_quantity'] . " where products_id = '" . (int)$order['products_id'] . "'");
-
-      }
-
-      tep_db_query("delete from " . TABLE_ORDERS . " where orders_id = '" . (int)$order_id . "'");
-      tep_db_query("delete from " . TABLE_ORDERS_PRODUCTS . " where orders_id = '" . (int)$order_id . "'");
-      tep_db_query("delete from " . TABLE_ORDERS_PRODUCTS_ATTRIBUTES . " where orders_id = '" . (int)$order_id . "'");
-      tep_db_query("delete from " . TABLE_ORDERS_STATUS_HISTORY . " where orders_id = '" . (int)$order_id . "'");
-      tep_db_query("delete from " . TABLE_ORDERS_TOTAL . " where orders_id = '" . (int)$order_id . "'");
-    }
+    require 'bitpay/remove_order.php';
   }
 
   class bitpay {
@@ -44,6 +30,7 @@
     public $title;
     public $description;
     public $enabled;
+    private $invoice;
 
     function bitpay () {
       global $order;
@@ -123,10 +110,6 @@
     }
 
     function before_process () {
-      return false;
-    }
-
-    function after_process () {
       global $insert_id, $order;
       require_once 'bitpay/bp_lib.php';
 
@@ -150,29 +133,45 @@
         'apiKey'            => MODULE_PAYMENT_BITPAY_APIKEY,
       );
 
-      $invoice = bpCreateInvoice($insert_id, $order->info['total'], $insert_id, $options);
+      $this->invoice = bpCreateInvoice($insert_id, $order->info['total'], $insert_id, $options);
 
-      if (is_array($invoice) && array_key_exists('error', $invoice)) {
-      	// error
-      	bpLog('Error creating invoice: ' . var_export($invoice, true));
-        tep_remove_order($insert_id, $restock = true);
-        tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . urlencode($invoice['error']['message']), 'SSL'));
-      } else if(!is_array($invoice)) {
-      	// error
-      	bpLog('Error creating invoice: ' . var_export($invoice, true));
-      	tep_remove_order($insert_id, $restock = true);
-        tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . urlencode('There was a problem processing your payment: invalid response returned from gateway.'), 'SSL'));
-      } else if (is_array($invoice) && array_key_exists('url', $invoice)) {
-      	// success
-      	$_SESSION['cart']->reset(true);
-        tep_redirect($invoice['url']);
+      //change email footers if there is an error
+      if (is_array($this->invoice) && array_key_exists('error', $this->invoice)) {
+        $this->email_footer = "***Error creating invoice: " . $this->invoice['error']['message'] . "***";
+      } else if(!is_array($this->invoice)) {
+        $this->email_footer = "***Error creating invoice: invalid response returned from gateway***";
+      } else if (is_array($this->invoice) && array_key_exists('url', $this->invoice)) {
+        //leave email footer as is
       } else {
-      	// unknown problem
-      	bpLog('Error creating invoice: ' . var_export($invoice, true));
+        $this->email_footer = "***Error creating invoice: unknown error or response***";
+      }
+
+      return false;
+    }
+
+    function after_process () {
+      global $insert_id;
+
+      if (is_array($this->invoice) && array_key_exists('error', $this->invoice)) {
+        // error
+        bpLog('Error creating invoice: ' . var_export($this->invoice, true));
+        tep_remove_order($insert_id, $restock = true);
+        tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . urlencode($this->invoice['error']['message']), 'SSL'));
+      } else if(!is_array($this->invoice)) {
+        // error
+        bpLog('Error creating invoice: ' . var_export($this->invoice, true));
+        tep_remove_order($insert_id, $restock = true);
+        tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . urlencode('There was a problem processing your payment: invalid response returned from gateway.'), 'SSL'));
+      } else if (is_array($this->invoice) && array_key_exists('url', $this->invoice)) {
+        // success
+        $_SESSION['cart']->reset(true);
+        tep_redirect($this->invoice['url']);
+      } else {
+        // unknown problem
+        bpLog('Error creating invoice: ' . var_export($this->invoice, true));
         tep_remove_order($insert_id, $restock = true);
         tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . urlencode('There was a problem processing your payment: unknown error or response.'), 'SSL'));
       }
-
       return false;
     }
 

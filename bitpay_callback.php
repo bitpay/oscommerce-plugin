@@ -20,6 +20,8 @@
  */
 
 require 'bitpay/bp_lib.php';
+require 'includes/application_top.php';
+require 'bitpay/remove_order.php';
 
 $response = bpVerifyNotification(MODULE_PAYMENT_BITPAY_APIKEY);
 
@@ -31,9 +33,6 @@ if (is_string($response)) {
     case 'paid':
     case 'confirmed':
     case 'complete':
-      //require needed for tep_db_query
-      require 'includes/application_top.php';
-
       if(function_exists('tep_db_query'))
           tep_db_query("update " . TABLE_ORDERS . " set orders_status = " . MODULE_PAYMENT_BITPAY_PAID_STATUS_ID . " where orders_id = " . intval($order_id));
       else
@@ -41,13 +40,6 @@ if (is_string($response)) {
       break;
     case 'invalid':
     case 'expired':
-      //requires needed for tep_remove_order
-      require 'admin/includes/configure.php';
-      require 'admin/includes/database_tables.php';
-      require 'admin/includes/functions/database.php';
-      tep_db_connect() or die('Unable to connect to database server!');
-      require 'admin/includes/functions/general.php';
-
       if(function_exists('tep_remove_order'))
           tep_remove_order($order_id, $restock = true);
       else
