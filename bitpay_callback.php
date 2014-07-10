@@ -30,31 +30,42 @@ require 'bitpay/remove_order.php';
 
 $response = bpVerifyNotification(MODULE_PAYMENT_BITPAY_APIKEY);
 
-if (is_string($response)) {
-  bpLog('bitpay callback error: ' . $response);
-} else {
-  $order_id = $response['posData'];
-  switch($response['status']) {
-    case 'paid':
-    case 'confirmed':
-    case 'complete':
-      if(function_exists('tep_db_query'))
-          tep_db_query("update " . TABLE_ORDERS . " set orders_status = " . MODULE_PAYMENT_BITPAY_PAID_STATUS_ID . " where orders_id = " . intval($order_id));
-      else
-          bpLog('FATAL: tep_db_query function is missing. Cannot update order_id = ' . $order_id . ' as ' . $response['status']);
-      break;
-    case 'invalid':
-    case 'expired':
-      if(function_exists('tep_remove_order'))
-          tep_remove_order($order_id, $restock = true);
-      else
-          bpLog('FATAL: tep_remove_order function is missing. Cannot update order_id = ' . $order_id . ' as ' . $response['status']);
-      break;
-    case 'new':
-      break;
-    default:
-      bpLog('INFO: Receieved unknown IPN status of ' . $response['status'] . ' for order_id = ' . $order_id);
-      break;
-  }
+if (is_string($response))
+{
+    bpLog('bitpay callback error: ' . $response);
 }
-?>
+else
+{
+    $order_id = $response['posData'];
+    switch($response['status'])
+    {
+        case 'paid':
+        case 'confirmed':
+        case 'complete':
+            if(function_exists('tep_db_query'))
+            {
+                tep_db_query("update " . TABLE_ORDERS . " set orders_status = " . MODULE_PAYMENT_BITPAY_PAID_STATUS_ID . " where orders_id = " . intval($order_id));
+            }
+            else
+            {
+                bpLog('FATAL: tep_db_query function is missing. Cannot update order_id = ' . $order_id . ' as ' . $response['status']);
+            }
+            break;
+        case 'invalid':
+        case 'expired':
+            if(function_exists('tep_remove_order'))
+            {
+                tep_remove_order($order_id, $restock = true);
+            }
+            else
+            {
+                bpLog('FATAL: tep_remove_order function is missing. Cannot update order_id = ' . $order_id . ' as ' . $response['status']);
+            }
+            break;
+        case 'new':
+            break;
+        default:
+            bpLog('INFO: Receieved unknown IPN status of ' . $response['status'] . ' for order_id = ' . $order_id);
+            break;
+    }
+}
