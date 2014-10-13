@@ -180,6 +180,14 @@ class bitpay
      */
     function before_process ()
     {
+        return false;
+    }
+
+    /**
+     * @return false
+     */
+    function after_process ()
+    {
         global $insert_id, $order;
         require_once 'bitpay/bp_lib.php';
 
@@ -222,16 +230,6 @@ class bitpay
         {
             $this->email_footer = "***Error creating invoice: unknown error or response***";
         }
-
-        return false;
-    }
-
-    /**
-     * @return false
-     */
-    function after_process ()
-    {
-        global $insert_id;
 
         if (is_array($this->invoice) && array_key_exists('error', $this->invoice))
         {
