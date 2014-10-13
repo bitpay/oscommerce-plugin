@@ -1,0 +1,36 @@
+#!/usr/bin/env php
+<?php
+/**
+ * This script will package up the plugin for distribution
+ */
+error_reporting(E_ALL | E_STRICT);
+ini_set('display_errors', 1);
+date_default_timezone_set('America/New_York'); // Main Office is in Eastern Timezone
+
+$version    = '1.x';
+$distDir    = __DIR__ . '/../build/dist';
+$tmpDistDir = $distDir . '/tmp';
+$distFile   = $distDir . '/Bitpay-' . $version;
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+$filesystem = new \Symfony\Component\Filesystem\Filesystem();
+$filesystem->mirror('bitpay/', sprintf('%s/bitpay/', $tmpDistDir));
+$filesystem->mirror('includes/', sprintf('%s/includes/', $tmpDistDir));
+$filesystem->copy('LICENSE', sprintf('%s/LICENSE', $tmpDistDir));
+$filesystem->copy('README.md', sprintf('%s/README.md', $tmpDistDir));
+
+$filesystem->remove($distFile.'.zip');
+$filesystem->remove($distFile.'.tgz');
+
+$process = new \Symfony\Component\Process\Process(
+    sprintf('cd %s; zip -r %s .', $tmpDistDir, $distFile.'.zip')
+);
+$process->run();
+$process = new \Symfony\Component\Process\Process(
+    sprintf('cd %s; tar -czf %s *', $tmpDistDir, $distFile.'.tgz')
+);
+$process->run();
+
+// Cleanup
+$filesystem->remove($tmpDistDir);
