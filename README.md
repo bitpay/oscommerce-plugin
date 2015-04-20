@@ -2,6 +2,7 @@
 
 Bitcoin payment plugin for osCommerce using the bitpay.com service.
 
+[![Build Status](https://travis-ci.org/bitpay/oscommerce-plugin.svg?branch=master)](https://travis-ci.org/bitpay/oscommerce-plugin)
 
 ## Quick Start Guide
 

@@ -3,7 +3,7 @@
 /**
  * The MIT License (MIT)
  * 
- * Copyright (c) 2011-2014 BitPay
+ * Copyright (c) 2011-2015 BitPay
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -53,11 +53,6 @@ class bitpay
      * @var
      */
     public $enabled;
-
-    /**
-     * @var
-     */
-    private $invoice;
 
     /**
      */
@@ -180,6 +175,14 @@ class bitpay
      */
     function before_process ()
     {
+        return false;
+    }
+
+    /**
+     * @return false
+     */
+    function after_process ()
+    {
         global $insert_id, $order;
         require_once 'bitpay/bp_lib.php';
 
@@ -203,60 +206,32 @@ class bitpay
             'apiKey'            => MODULE_PAYMENT_BITPAY_APIKEY,
         );
 
-        $this->invoice = bpCreateInvoice($insert_id, $order->info['total'], $insert_id, $options);
-
-        //change email footers if there is an error
-        if (is_array($this->invoice) && array_key_exists('error', $this->invoice))
-        {
-            $this->email_footer = "***Error creating invoice: " . $this->invoice['error']['message'] . "***";
-        }
-        else if(!is_array($this->invoice))
-        {
-            $this->email_footer = "***Error creating invoice: invalid response returned from gateway***";
-        }
-        else if (is_array($this->invoice) && array_key_exists('url', $this->invoice))
-        {
-            //leave email footer as is
-        }
-        else
-        {
-            $this->email_footer = "***Error creating invoice: unknown error or response***";
-        }
-
-        return false;
-    }
-
-    /**
-     * @return false
-     */
-    function after_process ()
-    {
-        global $insert_id;
-
-        if (is_array($this->invoice) && array_key_exists('error', $this->invoice))
+        $invoice = bpCreateInvoice($insert_id, $order->info['total'], $insert_id, $options);
+      
+        if (is_array($invoice) && array_key_exists('error', $invoice))
         {
             // error
-            bpLog('Error creating invoice: ' . var_export($this->invoice, true));
+            bpLog('Error creating invoice: ' . var_export($invoice, true));
             tep_remove_order($insert_id, $restock = true);
-            tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . urlencode($this->invoice['error']['message']), 'SSL'));
+            tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . urlencode($invoice['error']['message']), 'SSL'));
         }
-        else if(!is_array($this->invoice))
+        else if(!is_array($invoice))
         {
             // error
-            bpLog('Error creating invoice: ' . var_export($this->invoice, true));
+            bpLog('Error creating invoice: ' . var_export($invoice, true));
             tep_remove_order($insert_id, $restock = true);
             tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . urlencode('There was a problem processing your payment: invalid response returned from gateway.'), 'SSL'));
         }
-        else if (is_array($this->invoice) && array_key_exists('url', $this->invoice))
+        else if (is_array($invoice) && array_key_exists('url', $invoice))
         {
             // success
             $_SESSION['cart']->reset(true);
-            tep_redirect($this->invoice['url']);
+            tep_redirect($invoice['url']);
         }
         else
         {
             // unknown problem
-            bpLog('Error creating invoice: ' . var_export($this->invoice, true));
+            bpLog('Error creating invoice: ' . var_export($invoice, true));
             tep_remove_order($insert_id, $restock = true);
             tep_redirect(tep_href_link(FILENAME_SHOPPING_CART, 'error_message=' . urlencode('There was a problem processing your payment: unknown error or response.'), 'SSL'));
         }

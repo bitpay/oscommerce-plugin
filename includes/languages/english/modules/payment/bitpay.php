@@ -3,7 +3,7 @@
 /**
  * The MIT License (MIT)
  * 
- * Copyright (c) 2011-2014 BitPay
+ * Copyright (c) 2011-2015 BitPay
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@
 // Text Messages
 define('MODULE_PAYMENT_BITPAY_TEXT_TITLE', 'Bitcoin via BitPay');
 define('MODULE_PAYMENT_BITPAY_TEXT_DESCRIPTION', 'Use bitpay.com\'s invoice processing server to automatically accept bitcoins.');
-define('MODULE_PAYMENT_BITPAY_TEXT_EMAIL_FOOTER', 'You will receive further emails from bitpay.com when the status of your order is updated.');
+define('MODULE_PAYMENT_BITPAY_TEXT_EMAIL_FOOTER', 'You have attempted to make an order using bitcoins via bitpay.com!');
 
 // Error Messages
 define('MODULE_PAYMENT_BITPAY_BAD_CURRENCY', 'Currency not supported by bitpay.com.  Please choose another currency.');
