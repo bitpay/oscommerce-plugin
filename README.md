@@ -19,6 +19,7 @@ To get up and running with our plugin quickly, see the GUIDE here: https://githu
 
 **BitPay Support:**
 
+* Last Version Tested: 2.3.4
 * [BitPay Labs](https://labs.bitpay.com/c/plugins/oscommerce)
   * Post a question in our discussion forums
 * [Github Issues](https://github.com/bitpay/oscommerce-plugin/issues)
