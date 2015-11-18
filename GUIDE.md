@@ -1,6 +1,9 @@
 # Using the BitPay plugin for osCommerce
 
 ## Prerequisites
+
+* Last Version Tested: 2.3.4
+
 You must have a BitPay merchant account to use this plugin.  It's free to [sign-up for a BitPay merchant account](https://bitpay.com/start).
 
 
